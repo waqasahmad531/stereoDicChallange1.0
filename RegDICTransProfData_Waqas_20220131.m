@@ -2,7 +2,7 @@
 close all
 clear all
 clc
-cd('D:\DIC\Matlab')
+cd('D:\DIC\Matlab_Git')
 tic
 % profile on
 deadZone = 0.3;  %dead area around discontinuities for registration (mm)
@@ -38,8 +38,8 @@ outputTextData = strings([1,4]);
 %                320 321 322 323 324];  
 % sysgroups = [220 221 222 223 224;...%group 2 system 2 LAVA
 %             210 211 212 213 214];  %group 2 system 1
-% sysgroups = [410 411 412 413 414;...
-%                420 421 422 423 424]; %group 3 system1 and 2 Dantec
+sysgroups = 410;%[410 411 412 413 414;...
+               %420 421 422 423 424]; %group 3 system1 and 2 Dantec
 % groups = [];
 %  sysgroups = [
 %                520,521,522,523,524]; % LaVision
@@ -50,7 +50,9 @@ outputTextData = strings([1,4]);
 % sysgroups = [414;424];
 % sysgroups = [610 611 612 613 614;
 %              620 621 622 623 624];
-sysgroups = 622;
+% sysgroups = [710 711 712 713 714; %CSI
+%              720 721 722 723 724];
+% sysgroups = 820;
 mapper = true;
 figure('units','normalized','outerposition',[0 0 1 1])
     set(gcf,'color','w')
@@ -95,23 +97,25 @@ imgfolder = 'Plots';
   for iFile = 1:size(fileNames,1)
 
     if grp == 1
-        imdir = 'D:\DIC\Translate\16-mm\*';
+        imdir = 'D:\DIC\Translate\35-mm\*';
         fildir = sprintf('%s%g_0.tif',imdir,datasetim(1));
         imname = dir(fildir);
         %imdir = strcat(imdir,'*',)
 %        fildir = 'Step01 00,00-sys1-0000_0.tif';
     elseif grp == 2
-        imdir = 'D:\DIC\Translate\35-mm\*';
+        imdir = 'D:\DIC\Translate\16-mm\*';
         fildir = sprintf('%s%g_0.tif',imdir,datasetim(1));
         imname = dir(fildir);
 %        fildir = 'D:\DIC\Translate\16-mm\Step01 00,00-sys2-0000_0.tif';
     end
    
 
-    im = imread(strcat(imdir(1:end-1),imname(1).name));
+    im = imread(strcat(imdir(1:end-1),imname(iFile).name));
     im = repmat(im,1,1,3); 
 
-    
+    if iFile>=6
+        "ruk jaa yahan"
+    end
 
     %setup the input file name
     disp('*************************************************************');
@@ -130,7 +134,7 @@ imgfolder = 'Plots';
     if isfield(fLoad,'hdfData')
         fLoad.hdfData = fLoad.hdfData';
     end
-    A_1 = fLoad.(cell2mat(fieldnames(fLoad)));
+    A_1 = double(fLoad.(cell2mat(fieldnames(fLoad))));
 %     dicmat = A_1;
     A_131 = A_1; 
     
@@ -221,7 +225,7 @@ imgfolder = 'Plots';
     end   
     A_133 = regData;
     pltfield = ["U","V","W","A"];
-    for field = 1:4
+    for field = 1%:4
         if mapper 
             %subplot(1,3,3)
             ind = sub2ind([size(im,1) size(im,2)],round(A_133(:,2)),round(A_133(:,1)));
@@ -229,7 +233,7 @@ imgfolder = 'Plots';
             if field>3
                 Zp(ind) = sqrt(A_133(:,6).^2 + A_133(:,7).^2 + A_133(:,8).^2);
             else
-                Zp(ind) = A_133(:,field+5);
+                Zp(ind) = A_133(:,5);%A_133(:,field+5);
             end
 
             figure(1)
@@ -256,7 +260,7 @@ imgfolder = 'Plots';
             if field>3
                 Zp(ind) = sqrt(A_131(:,6).^2 + A_131(:,7).^2 + A_131(:,8).^2);
             else
-                Zp(ind) = A_131(:,field+5);
+                Zp(ind) = A_131(:,5);%A_131(:,field+5);
             end
     %         Zp(ind) = dicmat(:,5);
             figure(1)
@@ -344,7 +348,7 @@ imgfolder = 'Plots';
     if fSaveRegGrid_w || fSaveTPlotGrid
       %Save a grid of the data
       disp('Creating grid data ');
-      regGridData=DataGrid(regData(:,3:5), regData(:,6:8), gridParms, minCounts);
+      regGridData=DataGrid2(regData(:,3:5), regData(:,6:8), gridParms, minCounts);
       
       %save the registered grid of data
       if fSaveRegGrid 
@@ -411,16 +415,20 @@ imgfolder = 'Plots';
     labn = [auxZoneNames;auxZoneVals]';
     figure(2)
     clf;
-    fieldP = post_plot(regGridData,flag,labn,1,DICFileLoc,avgFlag,scale,fileext);
+    fieldP = initPlot(regGridData,flag,labn,1,DICFileLoc,avgFlag,scale,1,fileext);
+    drawnow
     exportgraphics(gcf,fieldP,'Resolution',300) %V Disp
     clf;
-    fieldP = post_plot(regGridData,flag,labn,2,DICFileLoc,avgFlag,scale,fileext);
+    fieldP = initPlot(regGridData,flag,labn,2,DICFileLoc,avgFlag,scale,2,fileext);
+    drawnow
     exportgraphics(gcf,fieldP,'Resolution',300) %V Disp
     clf;
-    fieldP = post_plot(regGridData,flag,labn,3,DICFileLoc,avgFlag,scale,fileext);
+    fieldP = initPlot(regGridData,flag,labn,3,DICFileLoc,avgFlag,scale,3,fileext);
+    drawnow
     exportgraphics(gcf,fieldP,'Resolution',300) %W Disp
     clf;
-    fieldP = post_plot(regGridData,flag,labn,4,DICFileLoc,avgFlag,scale,fileext);
+    fieldP = initPlot(regGridData,flag,labn,4,DICFileLoc,avgFlag,scale,4,fileext);
+    drawnow
     exportgraphics(gcf,fieldP,'Resolution',300) %Abs Disp
     clf;
     

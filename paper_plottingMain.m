@@ -3,7 +3,7 @@
 % be that we can compare the plots of different steps at different regions.
 % 
 clear all; close all; clc;
-lasFil = 'D:\DIC\LaserScan\laserScanRegDataGrid.mat';
+lasFil = 'J:\DIC\LaserScan\laserScanRegDataGrid.mat';
 lasData_0 = load(lasFil);
 lasData = lasData_0(1).regGridData;
 lincutLoc = -30;
@@ -34,21 +34,27 @@ plot(xVal,ZZ(xLen(xVal==lincutLoc),:),'r','LineWidth',1);
 %             220,221,222];  %group 2 system 1
 % sandia = [115;...
 %             125]; % Sandia 
-dantec = [410 411 412 413 414;...
-               420 421 422 423 424]; %group 3 system1 and 2 Dantec 
+dice = [115;...
+        125];
+dantec = [210;...
+               220]; %group 3 system1 and 2 Dantec 
 % matchID = [610];
-lavision = [510,511,512 513 514;...
-               520,521 522 523 524]; % LaVision
-matchid = [610 611 612 613 614];
+lavision = [310;...
+               320]; % LaVision
+matchid = [410;...
+            420];
+csi = [510; %CSI
+             520];
+grpid = [1,2,3,4,5];
 
- vend = {dantec,lavision,matchid};
+ vend = {dice,dantec,lavision,matchid,csi};
 % vend = {matchID};
 
 %% Number of plots for legend
 grpdataset = 0;
 for ven = 1:length(vend)
     sysgroups = vend{ven};
-    for grp = 1:size(sysgroups,1)
+    for grp = 1%:size(sysgroups,1)
         groups = sysgroups(grp,:);
         grpdataset = grpdataset + length(groups);
     end
@@ -114,9 +120,9 @@ for ven = 1: length(vend)
                 dispFieldsU{ven,grp,iGroupNum} = u;
                 dispFieldsV{ven,grp,iGroupNum} = v;
                 dispFieldsW{ven,grp,iGroupNum} = w;
-                if ven==3
-                    teranaam = 'waqas';
-                end
+%                 if ven==3
+%                     teranaam = 'waqas';
+%                 end
 %                 if ~(ven == 3 && grp == 2)
                     if grp == 1
                         gr1c = gr1c + 1;
@@ -126,7 +132,7 @@ for ven = 1: length(vend)
                         plot(xVal,Z(xLen(xVal==lincutLoc),:),linPro,'Color',linclr(clrcount,:),'LineWidth',linThi(venc));
                         ylim([-0.2 7])
 %                         axis equal
-                        lgstr = sprintf('Gr: %g-%g',ven,iGroupNum);
+                        lgstr = sprintf('Gr: %g-%g',grpid(ven),iGroupNum);
                         cmplgd = [cmplgd,string(lgstr)];
                         recColor(gr1c,:) = linclr(clrcount,:);
                     elseif grp == 2
@@ -135,7 +141,7 @@ for ven = 1: length(vend)
                         
                         plot(xVal,Z(xLen(xVal==lincutLoc),:),linPro,'Color',recColor(gr2c,:),'LineWidth',linThi(venc));
                         ylim([-0.2 7])
-                        lgstr = sprintf('Gr: %g-%g',ven,iGroupNum);
+                        lgstr = sprintf('Gr: %g-%g',grpid(ven),iGroupNum);
                         cmplgd2 = [cmplgd2,string(lgstr)];
 %                         clrcount
 %                         axis equal
@@ -164,7 +170,7 @@ lgd.Location = 'eastoutside';
 xlabel('Y-axis','Interpreter','latex','FontSize',12)
 ylabel('Plate features dimension (mm)','Interpreter','latex','FontSize',12)
 title('Features comparison b/w laser scan and DIC for system 1','Interpreter','latex','FontSize',14)
-fieldP = "D:\DIC\Statistics\lineCutSys1.png";
+fieldP = "H:\DIC\Statistics\lineCutSys1_n.png";
 % exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
 
 figure(3)
@@ -176,7 +182,7 @@ lgd.Location = 'eastoutside';
 xlabel('Y-axis','Interpreter','latex','FontSize',12)
 ylabel('Plate features dimension (mm)','Interpreter','latex','FontSize',12)
 title('Features comparison b/w laser scan and DIC for system 2','Interpreter','latex','FontSize',14)
-fieldP = "D:\DIC\Statistics\lineCutSys2.png";
+fieldP = "H:\DIC\Statistics\lineCutSys2_n.png";
 % exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
 
 
@@ -192,15 +198,20 @@ venInd = ceil(idx/2);
 
 %%
 
-dantec = [410 411 412 413 414;...
-               420 421 422 423 424]; %group 3 system1 and 2 Dantec 
-% matchID = [610];
-lavision = [510,511,512 513 514;...
-               520,521 522 523 524]; % LaVision
-matchid = [610 611 612 613 614;...
-               610 611 612 613 614];
-
- vend = {dantec,lavision,matchid};
+% dice = [115 115 115 115 115;...
+%         125 125 125 125 125];
+% dantec = [210 211 212 213 214;...
+%                220 221 222 223 224]; %group 3 system1 and 2 Dantec 
+% % matchID = [610];
+% lavision = [310,311,312 313 314;...
+%                320,321 322 323 324]; % LaVision
+% matchid = [410 411 412 413 414;...
+%             420 421 422 423 424];
+% csi = [510 511 512 513 514; %CSI
+%              520 521 522 523 524];
+% %grpid = [1,2,3,4,5];
+% 
+%  vend = {dice,dantec,lavision,matchid,csi};
 
 
 % grewer = [310 311 312 313 314;
@@ -216,18 +227,18 @@ matchid = [610 611 612 613 614;...
 participants = [];
 % vend = {lava,sandia,grewer};
 % vend = {matchid};
-cLimLo = zeros(18,4,3);
+cLimLo = zeros(18,4);
 cLimHi = cLimLo;
 cLimAvgLo = cLimLo;
 cLimAvgHi = cLimLo;
-meanvalB = cLimLo;
+meanvalB = zeros(18,4,length(vend));
 fixedmean = false;
 for ven = 1: length(vend)
   sysgroups = vend{ven};%[210 211 212 213 214];  %group 3 system 1 GREWER
 
-  for grp = 2%:size(sysgroups,1)
+  for grp = 1:size(sysgroups,1)
       groups = sysgroups(grp,:);
-      for iGroupNum = 1%:size(groups,2)
+      for iGroupNum = 1:size(groups,2)
          groupNum = groups(iGroupNum);
     
                 %Get the filenames for the test
@@ -247,24 +258,42 @@ for ven = 1: length(vend)
 %             elseif mod(idx(iFile),2) == 0
 %                sfloc = 2;
 %             end
+%         if ven == 1 && grp == 1 && iGroupNum == 1  && iFile == 1
+%                load(frameNames(iFile));
+%                Z = regGridData(:,:,3);
+%         end
+        countr = 0;
            if ven == 1 && grp == 1 && iGroupNum == 1  && iFile == 1
                load(frameNames(iFile));
                Z = regGridData(:,:,3);
-             for iv = 1:size(stepFiles,1)
+             for iven = 1:size(stepFiles,1)
                for isys = 1: size(stepFiles,2)
-                   if iv~=3 && isys ~= 2
+%                    if ~(iven==3 && isys==2)%iven~=3 && isys ~= 2
                        for idatset = 1:size(stepFiles,3)
-                            idxfile = stepFiles{iv,isys,idatset};
+                            idxfile = stepFiles{iven,isys,idatset};
                            for file = 1:18 
     %                           if iv~=3 || isys~=2
                                 load(idxfile(file))
                                 zz = regGridData(:,:,3);
                                 Z(zz==0) = 0;
+                                countr = countr + 1;
+
+                                %Extra part to check the region
+                                clf
+                                p = pcolor(Z);
+                                p.EdgeColor = 'None';%[0.50,0.50,0.50];%
+                                %              p.EdgeAlpha = 0.3;
+                                colormap(parula(20));colorbar
+                                axis ij equal tight
+                                drawnow
+                                
                            end
+                           disp(iven)
     %                                 sum(Z(:)~=0)
     %                    end
+%     countr
                        end
-                   end
+%                    end
                 end
              end
            end
@@ -276,7 +305,7 @@ for ven = 1: length(vend)
              avgFlag = 1;
              scale = 1;
              rmnan = 1;
-             fileext = '.eps';
+             fileext = '.pdf';
              pltflag = false;
              for avgFlag = 1
                 if iFile > 1
@@ -284,73 +313,45 @@ for ven = 1: length(vend)
                 end
                 sbt = sprintf('Group %s,  %s, Sys : %g, Dataset : %s',groupID,appliedStep(iFile),sysNum,dataSet);
                 [stU,stV,stW,st] = post_statsPara(regGridData,iFile);
+                clc
                 for disp = 1 : 4
-                   if  grp == 1 && (iGroupNum == 1 || iGroupNum == 2)
+%                    if  grp == 1 && (iGroupNum == 1 || iGroupNum == 2)
                       storeLim = true;
                       if avgFlag == 0
-                         [cLim,meanvalB(iFile,disp,ven)] = post_plot_v5_After20210407Meeting(regGridData,Z,meanvalB(iFile,disp,ven),...
+                         [cLim,meanvalB(iFile,disp,ven)] = post_plot_v6(regGridData,Z,meanvalB(iFile,disp,ven),...
                           rmnan,iGroupNum,disp,maindir,avgFlag,storeLim,...
                           fixedmean);
-                         if iGroupNum ==  1
-                            cLimLo(iFile,disp,ven) = cLim(1);
-                            cLimHi(iFile,disp,ven) = cLim(2);
-                         end
+%                          if iGroupNum ==  1
+                            cLimLo(iFile,disp) = cLim(1);
+                            cLimHi(iFile,disp) = cLim(2);
+%                          end
                                     
                             
                       else
                                     
-                         [cLim,meanvalB(iFile,disp,ven),stat] = post_plot_v5_After20210407Meeting(regGridData,Z,meanvalB(iFile,disp,ven),...
+                         [cLim,meanvalB(iFile,disp,ven),stat,tmean] = post_plot_v6(regGridData,Z,meanvalB(iFile,disp,ven),...
                          rmnan,iGroupNum,disp,maindir,avgFlag,storeLim,...
                          fixedmean);
-                         if iGroupNum ==  1
-                           cLimAvgLo(iFile,disp,ven) = cLim(1);
-                           cLimAvgHi(iFile,disp,ven) = cLim(2);
-                         end
-                                    
-                      end
-                            
+%                          if iGroupNum ==  1
+                           cLimAvgLo(iFile,disp) = cLim(1);
+                           cLimAvgHi(iFile,disp) = cLim(2);
+%                          end
                            
-                  elseif avgFlag == 0
-                          storeLim = false;
-
-                          [cLim,meanvalB(iFile,disp,ven)] = post_plot_v5_After20210407Meeting(regGridData,Z,meanvalB(iFile,disp,ven),...
-                          rmnan,iGroupNum,disp,maindir,avgFlag,storeLim,...
-                          fixedmean);
-                  elseif avgFlag == 1 && (grp == 1 && (iGroupNum == 1 || iGroupNum == 2))
-                          storeLim = true;
-                                
-                          [cLim,meanvalB(iFile,disp,ven),stat] = post_plot_v5_After20210407Meeting(regGridData,Z,meanvalB(iFile,disp,ven),...
-                           rmnan,iGroupNum,disp,maindir,avgFlag,storeLim,...
-                          fixedmean);
-                      
-                         if iGroupNum ==  1
-                            cLimAvgLo(iFile,disp,ven) = cLim(1);
-                            cLimAvgHi(iFile,disp,ven) = cLim(2);
-                         end
-                  end
-%                            [fieldP,cLim,ax,ax1,cb] = post_plot_v2(regGridData,...
-%                                 rmnan,sbt,disp,maindir,avgFlag,storeLim,fileext,...
-%                                 stU,stV,stW);
-%                             
-%                             [fieldP,cLim,ax,ax1,cb] = post_plot_v2(regGridData,...
-%                                 rmnan,sbt,disp,maindir,avgFlag,storeLim,fileext,...
-%                                 stU,stV,stW);
-%                             export_fig(fieldP,'-m1.5')
-                            
-%                             fig = gcf;
-%                             fig.CurrentAxes = ax;
-%                             if avgFlag == 0
-%                                
-%                                 caxis([cLimLo(iFile,disp),cLimHi(iFile,disp)])
-%                             else
-%                                 caxis([cLimAvgLo(iFile,disp),cLimAvgHi(iFile,disp)])
-%                             end
+%                           [cLim(1) cLim(2) tmean]          
+                      end
+                       if any([cLim(1) cLim(2) tmean]>50) 
+                           fprintf('yahan masla hai')
+                       end
+                           
 
                  stepStat(disp,:) = stat'; 
                 end
+%                 stepStat
              end
-                    filestat{iFile} = stepStat;
+                    filestat(1:4,1:4,iFile) = stepStat;
          end  
+                climAL{ven,grp,iGroupNum} = cLimAvgLo;
+                climAH{ven,grp,iGroupNum} = cLimAvgHi;
                 meanPerFrame{ven,grp,iGroupNum} = filestat;
       end
   end
@@ -360,15 +361,30 @@ steps = [0 0 0; 0 0 -10; 0 0 -20; 0 0 10; 0 0 20; 10 0 0; 20 0 0; -10 0 0;
 -20 0 0; 10 0 10; 20 0 20; -10 0 -10; -20 0 -20; 10 0 -10; 20 0 -20; -10 0 10;
 -20 0 20; 0 0 0];
 
+alpha = -0.0001;
+beta = -0.0099;
+gamma = -0.0042;
+
+rotx = [1,0,0;0,cos(alpha),-sin(alpha);0,sin(alpha),cos(alpha)];
+roty = [cos(beta),0,sin(beta);0,1,0;-sin(beta),0,cos(beta)];
+rotz = [cos(gamma),-sin(gamma),0;sin(gamma),cos(gamma),0;0,0,1];
+rot = rotx*roty*rotz;
+% Transforming from stage coordinates to plate coordinates.
+% Results in [Xn,Yn,Zn,1] matching [U,V,W,1]
+
+plateMovement = rot\steps';
+steps = plateMovement;
+
+
 % stepmeandir = strcat(baseDir,'stepsdMeanData.mat');
 % save(stepmeandir,'meanPerFrame','steps')
 
 %% Fixed Limit
 close all;
-[cLimHM,idM] = max(cLimAvgHi);
-cLimHM = squeeze(cLimHM)';
-cLimLm = min(cLimAvgLo);
-cLimLM = squeeze(cLimLm)';%cLimAvgLo(idM(1),:);
+% [cLimHM,idM] = max(cLimAvgHi);
+% cLimHM = squeeze(cLimHM)';
+% cLimLm = min(cLimAvgLo);
+% cLimLM = squeeze(cLimLm)';%cLimAvgLo(idM(1),:);
 
 
 %% Same as version 3
@@ -396,6 +412,16 @@ for ven = 1: length(vend)
         
          maindir = fullfile(baseDir,testDir);
          frameNames = fullfile(maindir,stepNames);
+         cll = climAL(ven,grp,:);
+         clh = climAH(ven,grp,:);
+          for i= 1:size(sysgroups,2)%5
+              tmpL(1:18,1:4,i) = cell2mat(cll(1,1,i));
+              tmpH(1:18,1:4,i) = cell2mat(clh(1,1,i));
+          end  
+          cLimHM = max(max(tmpH,[],3),[],1);
+          cLimLM = min(min(tmpL,[],3),[],1);
+          [cLimHM;cLimLM];
+
          for iFile = 1:size(stepNames,1)   
                                         
             load(frameNames(iFile));
@@ -407,7 +433,7 @@ for ven = 1: length(vend)
              scale = 1;
              rmnan = 1;
              pltflag = true;
-             fileext = '.pdf';
+             fileext = '.eps';
              for avgFlag = 1
                 if iFile > 1
                   rmnan = 1;
@@ -416,22 +442,22 @@ for ven = 1: length(vend)
                 [stU,stV,stW,st] = post_statsPara(regGridData,iFile);
                 for disp = 1 : 4
                    if ven == 1 && grp == 1 && (iGroupNum == 1 || iGroupNum == 2)
-                      storeLim = true;
+%                       storeLim = true;
                       if avgFlag == 0
                          [fieldP,cLim,meanval(iFile,disp)] = post_plot_A210331M(regGridData,Z,meanval(iFile,disp),...
                           rmnan,iGroupNum,sbt,disp,maindir,avgFlag,storeLim,fileext,...
-                          stU,stV,stW,[cLimLM(ven,disp),cLimHM(ven,disp)],fixedmean,pltflag);
-                         if iGroupNum ==  1
-                            cLimLo(iFile,disp) = cLim(1);
-                            cLimHi(iFile,disp) = cLim(2);
-                         end
+                          stU,stV,stW,[cLimLM(:,disp),cLimHM(:,disp)],fixedmean,pltflag);
+%                          if iGroupNum ==  1
+%                             cLimLo(iFile,disp) = cLim(1);
+%                             cLimHi(iFile,disp) = cLim(2);
+%                          end
                                     
                             
                       else
                                     
                          [fieldP,cLim,meanval(iFile,disp),stat] = post_plot_A210331M(regGridData,Z,meanval(iFile,disp),...
                          rmnan,iGroupNum,sbt,disp,maindir,avgFlag,storeLim,fileext,...
-                         stU,stV,stW,[cLimLM(ven,disp),cLimHM(ven,disp)],fixedmean,pltflag);
+                         stU,stV,stW,[cLimLM(:,disp),cLimHM(:,disp)],fixedmean,pltflag);
 %                          if ven == 1 && iGroupNum ==  1
 %                            cLimAvgLo(iFile,disp) = cLim(1);
 %                            cLimAvgHi(iFile,disp) = cLim(2);
@@ -445,13 +471,13 @@ for ven = 1: length(vend)
 
                           [fieldP,cLim,meanval(iFile,disp)] = post_plot_A210331M(regGridData,Z,meanval(iFile,disp),...
                           rmnan,iGroupNum,sbt,disp,maindir,avgFlag,storeLim,fileext,...
-                          stU,stV,stW,[cLimLM(ven,disp),cLimHM(ven,disp)],fixedmean,pltflag);
+                          stU,stV,stW,[cLimLM(:,disp),cLimHM(:,disp)],fixedmean,pltflag);
                     elseif avgFlag == 1
                           storeLim = false;
                                 
                           [fieldP,cLim,meanval(iFile,disp),stat] = post_plot_A210331M(regGridData,Z,meanval(iFile,disp),...
                            rmnan,iGroupNum,sbt,disp,maindir,avgFlag,storeLim,fileext,...
-                          stU,stV,stW,[cLimLM(ven,disp),cLimHM(ven,disp)],fixedmean,pltflag);
+                          stU,stV,stW,[cLimLM(:,disp),cLimHM(:,disp)],fixedmean,pltflag);
                     end
 %                            [fieldP,cLim,ax,ax1,cb] = post_plot_v2(regGridData,...
 %                                 rmnan,sbt,disp,maindir,avgFlag,storeLim,fileext,...
@@ -476,47 +502,67 @@ for ven = 1: length(vend)
                  clf;
                 end
              end
-                    filestat{iFile} = stepStat;
+%                     filestat{iFile} = stepStat;
          end  
-                meanPerFrame{ven,grp,iGroupNum} = filestat;
+%                 meanPerFrame{ven,grp,iGroupNum} = filestat;
       end
   end
 end
 
 %%
-
+dispVar = ["U","V","W","A"];
 close all;
-grpid = [4,5,6];
+grpid = [1,2,3,4,5];
 for vn = 1:length(vend)
     groupID = grpid(vn);
-   
-    for cm = 1:4
-        fig = set(gcf,'Renderer','opengl','color','white','Units','Normalized',...
-        'Outerposition',[0.4982,0.2079,0.3461,0.7625]);
-        cb = colorbar;
-        colormap((hsv(20)))
-        caxis([cLimLM(vn,cm),cLimHM(vn,cm)])
-        set(gca,'Visible','off');
-        cb.Title.String = '[\mum]';
-        cb.TickLabelInterpreter = 'latex';
-        mfloc = strfind(fieldP,'\');
-        figfold = mfloc(end)-1;
-        tm = char(fieldP);
-        figfin = string(tm(1:figfold));
-        clbr = sprintf('disp%g%g%s',groupID,cm,fileext);
-        clbrfile = fullfile(figfin,clbr);
-        drawnow;
-        exportgraphics(gcf,clbrfile,'Resolution',600) %U Disp
-        clf
-    end
+   for grp = 1:size(sysgroups,1)
+%         if ~(vn==3 && grp==2)
+             cll = climAL(vn,grp,:);
+             clh = climAH(vn,grp,:);
+              for i= 1:size(sysgroups,2)%5
+                  tmpL(1:18,1:4,i) = cell2mat(cll(1,1,i));
+                  tmpH(1:18,1:4,i) = cell2mat(clh(1,1,i));
+              end  
+              cLimHM = max(max(tmpH,[],3),[],1);
+              cLimLM = min(min(tmpL,[],3),[],1);
+%               [cLimHM;cLimLM]
+            for cm = 1:4
+                fig = set(gcf,'Renderer','opengl','color','white','Units','Normalized',...
+                'Outerposition',[0.4982,0.2079,0.3461,0.7625]);
+                cb = colorbar;
+                colormap((hsv(20)))
+                caxis([cLimLM(cm),cLimHM(cm)])
+                set(gca,'Visible','off');
+                cb.Title.String = '[\mum]';
+                cb.TickLabelInterpreter = 'latex';
+                cb.FontSize = 11;
+                mfloc = strfind(fieldP,'\');
+                figfold = mfloc(end)-1;
+                tm = "H:\DIC\colorbar\maincolorBar";%char(fieldP);
+                figfin = tm;%string(tm(1:figfold));
+                clbr = sprintf('cb_Group%02dSys%gd%s%s',groupID,grp,dispVar(cm),fileext);
+                clbrfile = fullfile(figfin,clbr);
+                drawnow;
+%                 [vn,grp,cm]
+                exportgraphics(gcf,clbrfile,'Resolution',600) %U Disp
+                clf
+            end
+%         end
+   end
     
 end
 %     OuterPosition = 211,429.8,391.6,207.9999999999999
 
+% 
+% steps = [0 0 0; 0 0 -10; 0 0 -20; 0 0 10; 0 0 20; 10 0 0; 20 0 0; -10 0 0;
+% -20 0 0; 10 0 10; 20 0 20; -10 0 -10; -20 0 -20; 10 0 -10; 20 0 -20; -10 0 10;
+% -20 0 20; 0 0 0];
 
-steps = [0 0 0; 0 0 -10; 0 0 -20; 0 0 10; 0 0 20; 10 0 0; 20 0 0; -10 0 0;
--20 0 0; 10 0 10; 20 0 20; -10 0 -10; -20 0 -20; 10 0 -10; 20 0 -20; -10 0 10;
--20 0 20; 0 0 0];
+stepmeandir = strcat(baseDir,'stepsdMeanData7a.mat');
+ save(stepmeandir,'meanPerFrame','steps')
 
-stepmeandir = strcat(baseDir,'stepsdMeanData.mat');
-% save(stepmeandir,'meanPerFrame','steps','meanval')
+
+ %% Plotting table
+
+ paper_plottingMain_view2
+ paper_plottingMain_view2_v2

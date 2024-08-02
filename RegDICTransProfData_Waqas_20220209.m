@@ -2,19 +2,19 @@
 close all
 clear all
 clc
-cd('D:\DIC\Matlab')
+cd('H:\DIC\Matlab_Git')
 tic
 % profile on
 deadZone = 0.3;  %dead area around discontinuities for registration (mm)
 fDoRegistration = true; %register the data (otherwise read from parm file)
-fSubDispFromProfile = true;%false; %subtract the displacement data from the profile to keep profiles at 0,0
-fRemoveOutliers = true; %remove data with displacements greater than numStdDev from the mean
+fSubDispFromProfile = false;%false; %subtract the displacement data from the profile to keep profiles at 0,0
+fRemoveOutliers = false; %remove data with displacements greater than numStdDev from the mean
 numStdDev = 3;
-fSaveRegData = true;%true %save the registered data
+fSaveRegData = true;%true;%true %save the registered data
 
-fSaveRegGrid_w = true; %W: I added these to avoid saving files 
+fSaveRegGrid_w = true;%true; %W: I added these to avoid saving files 
 
-fSaveRegGrid = true;%true  %create and save a regular grid of registered data
+fSaveRegGrid = true;%true;%true  %create and save a regular grid of registered data
 fSaveTPlotGrid = false;  %save a regular grid of data for techplot
 fCalcProfileNoise = false;%true; %calculate the noise in the profile from the 5 samples
 fSaveGlobalStats = true; %save the global stats to the excel sheet
@@ -34,24 +34,41 @@ outputTextData = strings([1,4]);
 % groups = [210 211 212 213 214];  %group 2 system 1
 %groups = [310];
 
-% sysgroups = [310 311 312 313 314];  %group 3 system 1 GREWER
-%sysgroups = [320 321 322 323 324];  %group 3 system 2 GREWER
-% sysgroups = [220 221 222 223 224;...%group 2 system 2 LAVA
-%             210 211 212 213 214];  %group 2 system 1
-% sysgroups = 410;%[410;420]; %group 3 system1 and 2 Dantec
-% groups = [];
-sysgroups = [510,511,512,513,514;520,521,522,523,524];
-% sysgroups = [115;125]; % Sandia 
+
+% sysgroups = [410 411 412 413 414;...
+%                420 421 422 423 424]; %group 3 system1 and 2 Dantec
+
+%  sysgroups = [ 510 511 512 513 514;
+%                520,521,522,523,524]; % LaVision
+% sysgroups = [110 111 112 113 114;
+%              120 121 122 123 124]; % Sandia DICe
+% sysgroups = [414;424];
+% sysgroups = [610 611 612 613 614;
+%              620 621 622 623 624];
+% sysgroups = [710 711 712 713 714; %CSI
+%              720 721 722 723 724];
+% sysgroups = 120;%[110 111 112 113 114];
+% %              120 121 122 123 124]; % Sandia DICe
+sysgroups = [115;125]; % Sandia DICe
+mapper = true;
+figure('units','normalized','outerposition',[0 0 1 1])
+    set(gcf,'color','w')
 
 % sysgroups = [210 211 212 213 214];  %group 3 system 1 GREWER
+datasetim = [0 1 2 3 4];
+stepVals = [0 0 0; 0 0 -10;0 0 -20; 0 0 10; 0 0 20; 10 0 0; 20 0 0;...
+    -10 0 0; -20 0 0; 10 0 10; 20 0 20; -10 0 -10; -20 0 -20; 10 0 -10;...
+    20 0 -20; -10 0 10; -20 0 20; 0 0 0];
 
+absVal = sqrt(sum(stepVals.^2,2));
+  
 for grp = 1:size(sysgroups,1)
     groups = sysgroups(grp,:);
 for iGroupNum = 1:size(groups,2)
   groupNum = groups(iGroupNum);
   
   %Get the filenames for the test
-  [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v2(groupNum);  
+  [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(groupNum);  
 
   %setup the filenames for the analysis
   testName = strrep(testDir,'\','_');
@@ -60,8 +77,43 @@ for iGroupNum = 1:size(groups,2)
   %get the parameters that describe the surface
   [theoBoundries,theoCorners,fitBoundries,areaCoef] = FillFitParms(sysNum, deadZone);
   
+imgfolder = 'Plots';
+    ntestdir = strcat(baseDir,testDir);
+    imgfolder1 = fullfile(ntestdir,strcat(imgfolder,'(',date,')'));
+    
+    if ~isfolder(imgfolder1)
+        mkdir(imgfolder1)
+    end
+
+    DICFileLoc = strcat(imgfolder1,'\');%baseDir, testDir);
+    fileext = '.pdf';
+    
+
+
   %Make regular grid data from all the files
   for iFile = 1:size(fileNames,1)
+
+    if grp == 1
+        imdir = 'H:\DIC\Translate\35-mm\*';
+        fildir = sprintf('%s%g_0.tif',imdir,datasetim(1));
+        imname = dir(fildir);
+        %imdir = strcat(imdir,'*',)
+%        fildir = 'Step01 00,00-sys1-0000_0.tif';
+    elseif grp == 2
+        imdir = 'H:\DIC\Translate\16-mm\*';
+        fildir = sprintf('%s%g_0.tif',imdir,datasetim(1));
+        imname = dir(fildir);
+%        fildir = 'D:\DIC\Translate\16-mm\Step01 00,00-sys2-0000_0.tif';
+    end
+   
+
+    im = imread(strcat(imdir(1:end-1),imname(1).name));
+    im = repmat(im,1,1,3); 
+
+    if iFile>=6
+        "ruk jaa yahan"
+    end
+
     %setup the input file name
     disp('*************************************************************');
     disp(strcat('working on file: ',fileNames(iFile)));
@@ -73,8 +125,19 @@ for iGroupNum = 1:size(groups,2)
     %Read the data and then seperate into the sepaerate areas
     whos('-file', DICInputFile);
     fLoad = load(DICInputFile);
-    A_1 = fLoad.(cell2mat(fieldnames(fLoad)));
-
+    
+    %Adding lines to analyze the codes which have columns data instead of
+    %rows: Specifically for LaVision
+    if isfield(fLoad,'hdfData')
+        fLoad.hdfData = fLoad.hdfData';
+    end
+    A_1 = double(fLoad.(cell2mat(fieldnames(fLoad))));
+%     dicmat = A_1;
+    A_131 = A_1;
+    if fSubDispFromProfile
+        A_131(:,3:5) = A_131(:,3:5)-A_131(:,6:8);
+    end
+    
     %strip out any nan entries
     disp(strcat('-rows before StripNan', num2str(size(A_1,1))));
     initRows = size(A_1, 1);
@@ -95,7 +158,7 @@ for iGroupNum = 1:size(groups,2)
     end
     
     %if it is the first file either do the registration or get the parms
-    if iFile == 1
+    if iFile == 1 %&& iGroupNum == 1 
         RegParmsFile = strcat(DICFileBase, '_RegParms.dat');        
         if fDoRegistration
           disp('calculating the registration parameters');
@@ -113,6 +176,7 @@ for iGroupNum = 1:size(groups,2)
         end
     end
     
+    
     %%apply the transformation to the full data set
     disp('applying the registraion transformation to the data');
     rotArrReg = RotArray(optVals(1), optVals(2), optVals(3));
@@ -128,7 +192,12 @@ for iGroupNum = 1:size(groups,2)
     minVals = min(regData(:,3:8));
     maxVals = max(regData(:,3:8));
     allVals = [aveVals; minVals; maxVals; stdDev];
-    allVals = reshape(allVals,1,[]);    
+    allVals = reshape(allVals,1,[]); 
+
+    A_132 = regData;
+
+    
+
     
     outlierRows = 0.0;
     if fRemoveOutliers
@@ -153,7 +222,99 @@ for iGroupNum = 1:size(groups,2)
       maxVals = max(regData(:,3:8));
       allVals = [aveVals; minVals; maxVals; stdDev];
       allVals = reshape(allVals,1,[]);       
-    end    
+    end   
+    A_133 = regData;
+    pltfield = ["U","V","W","A"];
+    for field = 1:4
+        if mapper 
+            %subplot(1,3,3)
+            ind = sub2ind([size(im,1) size(im,2)],round(A_133(:,2)),round(A_133(:,1)));
+            Zp = NaN([size(im,1) size(im,2)]);
+            if field>3
+                Zp(ind) = sqrt(A_133(:,6).^2 + A_133(:,7).^2 + A_133(:,8).^2);
+            else
+                Zp(ind) = A_133(:,field+5);%A_133(:,5);%
+            end
+
+            figure(1)
+            subplot(1,2,2)
+            imshow(im)
+            hold on 
+            p = pcolor(Zp);
+            lims = [mean(Zp,'all','omitnan')-2*std(Zp,[],'all','omitnan') ...
+                mean(Zp,'all','omitnan')+2*std(Zp,[],'all','omitnan')];
+            colorbar
+            if iFile>1
+                caxis(lims)
+            else
+                caxis('auto')
+            end
+            hold off
+            p.LineStyle = 'none';p.EdgeColor = 'flat';p.FaceColor = 'flat';
+            title('Transformed (Outliers removed)','Interpreter','latex')
+    %         clear dicmat
+            %subplot(1,3,1)
+    %         dicmat = A_1;
+            ind = sub2ind([size(im,1) size(im,2)],round(A_131(:,2)),round(A_131(:,1)));
+            Zp = NaN([size(im,1) size(im,2)]);
+            if field>3
+                Zp(ind) = sqrt(A_131(:,6).^2 + A_131(:,7).^2 + A_131(:,8).^2);
+            else
+                Zp(ind) = A_131(:,field+5);%A_131(:,5);%
+            end
+    %         Zp(ind) = dicmat(:,5);
+            figure(1)
+            subplot(1,2,1)
+            imshow(im)
+            hold on 
+            p = pcolor(Zp);
+            colorbar
+            if iFile>1
+                caxis(lims)
+            else
+                caxis('auto')
+            end
+            hold off
+            p.LineStyle = 'none';p.EdgeColor = 'flat';p.FaceColor = 'flat';
+            title('Complete Data','Interpreter','latex')
+    %         clear dicmat
+            %subplot(1,3,2)
+            
+    %         dicmat = A_2;
+            ind = sub2ind([size(im,1) size(im,2)],round(A_132(:,2)),round(A_132(:,1)));
+            Zp = NaN([size(im,1) size(im,2)]);
+            if field>3
+                Zp(ind) = sqrt(A_132(:,6).^2 + A_132(:,7).^2 + A_132(:,8).^2);
+            else
+                Zp(ind) = A_132(:,field+5);
+            end
+
+%             figure(1)
+%             subplot(1,3,2)
+%             imshow(im)
+%             hold on 
+%             p = pcolor(Zp);
+%             colorbar
+%             if iFile>1
+%                 caxis(lims)
+%             else
+%                 caxis('auto')
+%             end
+%             hold off
+%             p.LineStyle = 'none';p.EdgeColor = 'flat';p.FaceColor = 'flat';
+%             title('Transformed Data','Interpreter','latex')
+
+            figure(1)
+            fieldP = sprintf('%sDataset%gStep%g%s%s',DICFileLoc,dataSet,iFile,pltfield(field),fileext);
+%             sgtitle(sprintf('Dataset: %g, Step : %g, Z',iGroupNum,iFile))
+            sgtitle(sprintf('Dataset: %g, Step : %g, %s',iGroupNum,iFile,pltfield(field)))
+%     fieldP = post_plot(regGridData,flag,labn,1,DICFileLoc,avgFlag,scale,fileext);
+            exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
+            clf
+
+        end
+    end
+
     
     %Save the stats to the overall output matrix
     outputIdx = outputIdx + 1;
@@ -188,7 +349,7 @@ for iGroupNum = 1:size(groups,2)
     if fSaveRegGrid_w || fSaveTPlotGrid
       %Save a grid of the data
       disp('Creating grid data ');
-      regGridData=DataGrid(regData(:,3:5), regData(:,6:8), gridParms, minCounts);
+      regGridData=DataGrid2(regData(:,3:5), regData(:,6:8), gridParms, minCounts);
       
       %save the registered grid of data
       if fSaveRegGrid 
@@ -232,7 +393,7 @@ for iGroupNum = 1:size(groups,2)
     end
     %WAQAS: Added code for plotting  
     avgFlag = 0;
-    scale = 1;
+    scale = 0;
     if avgFlag == 1
         regGridData(:,:,4) = regGridData(:,:,4) - aveVals(4);
         regGridData(:,:,5) = regGridData(:,:,5) - aveVals(5);
@@ -253,18 +414,22 @@ for iGroupNum = 1:size(groups,2)
 %    p = profile('info')     
    [auxZoneNames, auxZoneVals] = fillAuxZoneData(allVals, appliedStep(iFile), sysNum, groupID, dataSet);    
     labn = [auxZoneNames;auxZoneVals]';
-    DICFileLoc = strcat(baseDir, testDir);
-    fileext = '.png';
-    fieldP = post_plot(regGridData,flag,labn,1,DICFileLoc,avgFlag,scale,fileext);
-    exportgraphics(gcf,fieldP,'Resolution',300) %U Disp
+    figure(2)
     clf;
-    fieldP = post_plot(regGridData,flag,labn,2,DICFileLoc,avgFlag,scale,fileext);
+    fieldP = initPlot(regGridData,flag,labn,1,DICFileLoc,avgFlag,scale,1,fileext);
+    drawnow
     exportgraphics(gcf,fieldP,'Resolution',300) %V Disp
     clf;
-    fieldP = post_plot(regGridData,flag,labn,3,DICFileLoc,avgFlag,scale,fileext);
+    fieldP = initPlot(regGridData,flag,labn,2,DICFileLoc,avgFlag,scale,2,fileext);
+    drawnow
+    exportgraphics(gcf,fieldP,'Resolution',300) %V Disp
+    clf;
+    fieldP = initPlot(regGridData,flag,labn,3,DICFileLoc,avgFlag,scale,3,fileext);
+    drawnow
     exportgraphics(gcf,fieldP,'Resolution',300) %W Disp
     clf;
-    fieldP = post_plot(regGridData,flag,labn,4,DICFileLoc,avgFlag,scale,fileext);
+    fieldP = initPlot(regGridData,flag,labn,4,DICFileLoc,avgFlag,scale,4,fileext);
+    drawnow
     exportgraphics(gcf,fieldP,'Resolution',300) %Abs Disp
     clf;
     
