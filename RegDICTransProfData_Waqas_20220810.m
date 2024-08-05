@@ -7,7 +7,7 @@ testDir = fullfile(mainDir,"testing");
 tic
 % profile on
 deadZone = 0.3;  %dead area around discontinuities for registration (mm)
-fDoRegistration = false; %register the data (otherwise read from parm file)
+fDoRegistration = true; %register the data (otherwise read from parm file)
 fSubDispFromProfile = false; %subtract the displacement data from the profile to keep profiles at 0,0
 fRemoveOutliers = false; %remove data with displacements greater than numStdDev from the mean
 numStdDev = 3;
@@ -31,8 +31,8 @@ outputTextData = strings([1,4]);
 %select the groups to work on
 % There are 5 frames captured at each step, named dataSet. The two systems
 % are number 1 and 2. Each row in sysgroups is for them respectively.
-sysgroups = [0,4;%[10, 11, 12, 13, 14;         
-             0,3]; %20, 21, 22, 23, 24]; 
+sysgroups = [0,4;%[10, 11, 12, 13, 14;
+    0,3]; %20, 21, 22, 23, 24];
 
 
 figure('units','normalized','outerposition',[0 0 1 1])
@@ -52,19 +52,12 @@ for iSys = 1:size(sysgroups,1)
         curDataset = datasets(iDataset);
 
         %Get the filenames for the test
-        groupID = "6";
+        groupID = "6"; % Hardcoding it as first 5 groups are settled now.
         steps = [1 2 6 9 12 17 18];
         [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, stepVals, stepNum] = ...
-                        DicDataFileNamesForTesting(testDir, iSys,curDataset);
-        % [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(groupNum);
-
-        % %setup the filenames for the analysis
-        % testName = strrep(testDir,'\','_');
-        % testDir = strcat(testDir, '\');
-
+            DicDataFileNamesForTesting(testDir, iSys,curDataset);
         %get the parameters that describe the surface
         [theoBoundries,theoCorners,fitBoundries,areaCoef] = FillFitParms(sysNum, deadZone);
-
         imgfolder = 'Plots';
         % ntestdir = strcat(baseDir,testDir);
         imgfolder1 = fullfile(testDir,strcat(imgfolder,'(',string(datetime("today")),')'));
@@ -96,8 +89,8 @@ for iSys = 1:size(sysgroups,1)
             disp('******************************************************');
             disp(strcat('working on file: ',fileNames(iFile)));
             fileBase = fileNames(iFile);
-            DICFileBase = strcat(baseDir, testDir, fileBase);
-            DICInputFile = strcat(DICFileBase, '.mat');
+            DICFileBase = extractBefore(fileBase,strlength(fileBase)-3);
+            DICInputFile = fileNames(iFile);%strcat(DICFileBase, '.mat');
             zoneName = strcat(fileBase, ' ');  %%move to techplot area
 
             %Read the data and then seperate into the sepaerate areas
@@ -145,12 +138,12 @@ for iSys = 1:size(sysgroups,1)
                     %register and return the optimized transform values
                     optVals = RegisterPlate(areas, areaPnts, areaCoef, 3);
                     %save the parameters
-                    csvwrite(RegParmsFile, optVals);
+                    writematrix(RegParmsFile, optVals);
                 else
                     assert(isfile(RegParmsFile),'Parameter file not found');
                     disp('reading the registration parameters from file');
                     %read the saved parameters
-                    optVals = csvread(RegParmsFile);
+                    optVals = readmatrix(RegParmsFile);
                 end
             end
 
@@ -208,84 +201,6 @@ for iSys = 1:size(sysgroups,1)
                 allVals = reshape(allVals,1,[]);
             end
             A_133 = regData;
-            pltfield = ["U","V","W","A"];
-            for field = 1:4
-                if mapper == true
-                    %subplot(1,3,3)
-                    ind = sub2ind([size(im,1) size(im,2)],round(A_133(:,2)),round(A_133(:,1)));
-                    Zp = NaN([size(im,1) size(im,2)]);
-                    if field>3
-                        Zp(ind) = sqrt(A_133(:,6).^2 + A_133(:,7).^2 + A_133(:,8).^2);
-                    else
-                        Zp(ind) = A_133(:,field+5);%A_133(:,5);%
-                    end
-
-                    figure(1)
-                    subplot(1,2,2)
-                    imshow(im)
-                    hold on
-                    p = pcolor(Zp);
-                    lims = [mean(Zp,'all','omitnan')-2*std(Zp,[],'all','omitnan') ...
-                        mean(Zp,'all','omitnan')+2*std(Zp,[],'all','omitnan')];
-                    colorbar
-                    if iFile>1
-                        clim(lims)
-                    else
-                        clim('auto')
-                    end
-                    hold off
-                    p.LineStyle = 'none';p.EdgeColor = 'flat';p.FaceColor = 'flat';
-                    title('Transformed (Outliers removed)','Interpreter','latex')
-                    %         clear dicmat
-                    %subplot(1,3,1)
-                    %         dicmat = A_1;
-                    ind = sub2ind([size(im,1) size(im,2)],round(A_131(:,2)),round(A_131(:,1)));
-                    Zp = NaN([size(im,1) size(im,2)]);
-                    if field>3
-                        Zp(ind) = sqrt(A_131(:,6).^2 + A_131(:,7).^2 + A_131(:,8).^2);
-                    else
-                        Zp(ind) = A_131(:,field+5);%A_131(:,5);%
-                    end
-                    %         Zp(ind) = dicmat(:,5);
-                    figure(1)
-                    subplot(1,2,1)
-                    imshow(im)
-                    hold on
-                    p = pcolor(Zp);
-                    colorbar
-                    if iFile>1
-                        clim(lims)
-                    else
-                        clim('auto')
-                    end
-                    hold off
-                    p.LineStyle = 'none';p.EdgeColor = 'flat';p.FaceColor = 'flat';
-                    title('Complete Data','Interpreter','latex')
-                    %         clear dicmat
-                    %subplot(1,3,2)
-
-                    %         dicmat = A_2;
-                    ind = sub2ind([size(im,1) size(im,2)],round(A_132(:,2)),round(A_132(:,1)));
-                    Zp = NaN([size(im,1) size(im,2)]);
-                    if field>3
-                        Zp(ind) = sqrt(A_132(:,6).^2 + A_132(:,7).^2 + A_132(:,8).^2);
-                    else
-                        Zp(ind) = A_132(:,field+5);
-                    end
-
-
-                    figure(1)
-                    fieldP = sprintf('%sDataset%gStep%g%s%s',DICFileLoc,dataSet,iFile,pltfield(field),fileext);
-                    %             sgtitle(sprintf('Dataset: %g, Step : %g, Z',iGroupNum,iFile))
-                    sgtitle(sprintf('Dataset: %g, Step : %g, %s',iDataset,iFile,pltfield(field)))
-                    %     fieldP = post_plot(regGridData,flag,labn,1,DICFileLoc,avgFlag,scale,fileext);
-                    exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
-                    drawnow
-                    clf
-
-                end
-            end
-
 
             %Save the stats to the overall output matrix
             outputIdx = outputIdx + 1;
@@ -317,87 +232,11 @@ for iSys = 1:size(sysgroups,1)
                 save(regMatFile,'regData');
             end
 
-            if fSaveRegGrid_w == true || fSaveTPlotGrid == true
-                %Save a grid of the data
-                disp('Creating grid data ');
-                regGridData=DataGrid2(regData(:,3:5), regData(:,6:8), gridParms, minCounts);
-
-                %save the registered grid of data
-                if fSaveRegGrid == true
-                    regGridMatFile = strcat(DICFileBase, '_RegGrid.mat');
-                    disp(strcat('Writing RegGridFile => ',regGridMatFile));
-                    save(regGridMatFile,'regGridData');
-                end
-
-                %save the registered grid of data for plotting
-                if fSaveTPlotGrid == true
-                    disp('save techplot file');
-                    disp('subtract mean displacements for plotting');
-                    for ix = 1:size(regGridData,1)
-                        for iy = 1:size(regGridData,2)
-                            regGridData(ix,iy,4) = regGridData(ix,iy,4) - aveVals(4);
-                            regGridData(ix,iy,5) = regGridData(ix,iy,5) - aveVals(5);
-                            regGridData(ix,iy,6) = regGridData(ix,iy,6) - aveVals(6);
-                            if regGridData(ix,iy,7)<4
-                                regGridData(ix,iy,4) = 0;
-                                regGridData(ix,iy,5) = 0;
-                                regGridData(ix,iy,6) = 0;
-                            end
-                        end
-                    end
-                    disp('end techplot subtract mean');
-
-                    %Save TechPlot formatted grid data
-                    regTPlotDatFile = strcat(DICFileBase, '_TPlotGrid.dat');
-                    disp(strcat('Writing Techplot RegTPlotFile => ',regTPlotDatFile));
-                    zoneName = strcat(fileBase, ' ');
-                    techPlotData.file = regTPlotDatFile;
-                    techPlotData.title = strcat('"', strcat('Group_', groupID, ' System_', num2str(sysNum), ' Dataset_', dataSet, '"'));
-                    techPlotData.vars = '"X(mm)" "Y(mm)" "Z(mm)" "U-aveU(mm)" "V-aveV(mm)" "W-aveW(mm)" "Count"';
-                    techPlotData.zoneTitle = char(strcat('"', zoneName, '"'));
-                    [auxZoneNames, auxZoneVals] = fillAuxZoneData(allVals, appliedStep(iFile), sysNum, groupID, dataSet);
-                    WriteTechPlot(techPlotData, regGridData,auxZoneNames, auxZoneVals);
-                    disp(strcat('End => ' ,zoneName));
-                end
-
-
+            % Plotting to see if transformation worked or not.
+            pltfield = ["U","V","W","A"];
+            if mapper == true
+                plotTransformedData(regData, A_131, A_132, im, iFile, DICFileLoc, dataSet, pltfield, fileext)
             end
-            %WAQAS: Added code for plotting
-            avgFlag = 0;
-            scale = 0;
-            if avgFlag == 1
-                regGridData(:,:,4) = regGridData(:,:,4) - aveVals(4);
-                regGridData(:,:,5) = regGridData(:,:,5) - aveVals(5);
-                regGridData(:,:,6) = regGridData(:,:,6) - aveVals(6);
-            end
-
-            if  iDataset == 1 && iFile == 1
-
-                flag = 1;
-            else
-                flag = 0;
-            end
-            %    p = profile('info')
-            [auxZoneNames, auxZoneVals] = fillAuxZoneData(allVals, appliedStep(iFile), sysNum, groupID, dataSet);
-            labn = [auxZoneNames;auxZoneVals]';
-            figure(2)
-            clf;
-            fieldP = initPlot(regGridData,flag,labn,1,DICFileLoc,avgFlag,scale,1,fileext);
-            drawnow
-            exportgraphics(gcf,fieldP,'Resolution',300) %V Disp
-            clf;
-            fieldP = initPlot(regGridData,flag,labn,2,DICFileLoc,avgFlag,scale,2,fileext);
-            drawnow
-            exportgraphics(gcf,fieldP,'Resolution',300) %V Disp
-            clf;
-            fieldP = initPlot(regGridData,flag,labn,3,DICFileLoc,avgFlag,scale,3,fileext);
-            drawnow
-            exportgraphics(gcf,fieldP,'Resolution',300) %W Disp
-            clf;
-            fieldP = initPlot(regGridData,flag,labn,4,DICFileLoc,avgFlag,scale,4,fileext);
-            drawnow
-            exportgraphics(gcf,fieldP,'Resolution',300) %Abs Disp
-            clf;
 
         end
     end
