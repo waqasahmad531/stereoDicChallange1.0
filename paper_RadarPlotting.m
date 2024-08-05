@@ -1,5 +1,5 @@
 
-clc;clear all;close all;
+clc;clearvars;close all;
 dice =[115;125]; %[115 115 115 115 115;...
 %             125 125 125 125 125]; 
 dantec = [211;221];%[410 411 412 413 414;...
