@@ -1,0 +1,86 @@
+function [fileNames, testDir, sysNum, baseDir, appliedStep, stepVals] = DicDataFileNamesForTesting(baseDir, sysNum, datasetNum, steps)
+% Generates the filenames for the selected test set based on inputs
+% baseDir: The base directory for the data
+% sysNum: The system number (1, 2, etc.)
+% steps: A vector of steps to include in the output (e.g., [1, 10, 16])
+
+% Initialize variables
+
+sysName = systemFolders(baseDir);
+% fileNames = repmat(" ", length(steps), 1);
+testDir = fullfile(baseDir,sysName(sysNum));
+[datasetDir, datasetInDir] = datasetFolder(testDir);
+locFolder = datasetDir(datasetNum==datasetInDir);
+framesFolder = fullfile(testDir,locFolder);
+matFiles = fullfile(framesFolder,'*.mat');
+[fileNames,fileNumber] = imgFilesPath(matFiles); % extracting frame name and number
+appliedStep = strings(1, 18);
+
+% dataSet = "";
+% groupNum = "";
+stepVals = [
+    0, 0; 0, -10; 0, -20; 0, 10; 0, 20; 10, 0; 20, 0; -10, 0; -20, 0;
+    10, 10; 20, 20; -10, -10; -20, -20; 10, -10; 20, -20; -10, 10; -20, 20; 0, 0
+];
+
+% Define step descriptions
+stepDescriptions = [
+    "Step 01=>  00,  00,  00", "Step 02=>  00,  00, -10", "Step 03=>  00,  00, -20",...
+    "Step 04=>  00,  00,  10", "Step 05=>  00,  00,  20", "Step 06=>  10,  00,  00",...
+    "Step 07=>  20,  00,  00", "Step 08=> -10,  00,  00", "Step 09=> -20,  00,  00",...
+    "Step 10=>  10,  00,  10", "Step 11=>  20,  00,  20", "Step 12=> -10,  00, -10",...
+    "Step 13=> -20,  00, -20", "Step 14=>  10,  00, -10", "Step 15=>  20,  00, -20",...
+    "Step 16=> -10,  00,  10", "Step 17=> -20,  00,  20", "Step 18=>  00,  00,  00"
+];
+
+% Populate appliedStep with descriptions
+appliedStep = stepDescriptions(fileNumber+1);
+stepVals = stepVals(fileNumber+1,:);
+
+% % Generate filenames for specified steps
+% for i = 1:length(steps)
+%     step = steps(i);
+%     if step >= 1 && step <= 18
+%         fileNames(i) = sprintf('step%02d', step - 1);
+%     else
+%         error('Step number must be between 1 and 18.');
+%     end
+% end
+% 
+end
+
+function subfolderNames = systemFolders(baseDir)
+% Get directory contents
+dirContents = dir(baseDir);
+
+% Filter out the subfolders
+isSubfolder = [dirContents.isdir]; % Logical array indicating folders
+subfolderNames = {dirContents(isSubfolder).name}; % Cell array of subfolder names
+
+% Remove '.' and '..' which represent the current and parent folder
+subfolderNames = subfolderNames(~ismember(subfolderNames, {'.', '..'}));
+subfolderNames = string(cat(1,subfolderNames{:}));
+end
+
+function [datasets, datasetsNum] = datasetFolder(sysDir)
+dirContents = dir(sysDir);
+% Filter out the subfolders
+isSubfolder = [dirContents.isdir]; % Logical array indicating folders
+datasets = {dirContents(isSubfolder).name}; % Cell array of subfolder names
+
+% Remove '.' and '..' which represent the current and parent folder
+datasets = datasets(~ismember(datasets, {'.', '..'}));
+datasets = string(cat(1,datasets{:}));
+temp = regexp(datasets,'\d','match');
+datasetsNum = str2double(cat(1,temp{:}));
+end
+
+function [imgsPath, frames] = imgFilesPath(testImgsDir)
+imgs = dir(testImgsDir);
+folder = {imgs.folder};
+name = {imgs.name};
+imgsPath = cellfun(@fullfile,folder,name,'UniformOutput',false);
+imgsPath = string(cat(1,imgsPath{:}));
+a = regexp(name,'\d*','match');
+frames = str2double(cat(1,a{:}));
+end
