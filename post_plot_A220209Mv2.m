@@ -41,10 +41,6 @@ elseif n == 4
     figtit = 'Abs Displacement';
 end
 
-idv = strfind(testfolder,'\');
-vendor = extractBetween(testfolder,idv(2)+1,idv(3)-1);
-% testfolder(():());
-
 if rmNaNFlag == 1
 %     temp(temp==0) = NaN;
 %             B = unique(temp);
@@ -60,15 +56,6 @@ if rmNaNFlag == 1
  
 end
 
-    
-% temp = temp-mean(temp,'all','omitnan'); 
-
-    
-
-%  figure(1)
-% fig = set(gcf,'Renderer','opengl','color','white','Units','Normalized',...
-%        'Outerposition',[0.1,0.0,0.53,0.99]);
-   %, 'InnerPosition',[0.2,0.25,0.62,0.62]
    if pltflag
     fig = set(gcf,'Renderer','opengl','color','white','Units','Normalized',...
        'Outerposition',[0.4982,0.3079,0.3461,0.4625]);
@@ -144,31 +131,13 @@ if pltflag
 %     cb.TickLabelInterpreter = 'latex';
 end
 if lims(1) ~= lims(2)
-    caxis(lims);
+    clim(lims);
 else
-   caxis('auto');
+   clim('auto');
 end
-% caxis("auto");
+
 caxisLim = lims;
-% colorbar;
-% if storeLim && iGroupNum == 1
-%     caxisLim = [mean(temp,'all','omitnan')-2*std(temp,[],'all','omitnan') ...
-%             mean(temp,'all','omitnan')+2*std(temp,[],'all','omitnan')];
-%         if any(isnan(caxisLim))
-%            caxisLim = caxis;
-%            caxis(caxisLim)
-%         else
-%             caxis(caxisLim);
-% %             caxisLim = lims;
-%         end
-% elseif iGroupNum~=1 && all(lims==0)
-% %     caxis(lims);
-%     caxisLim = caxis;
-% else
-%     caxis(lims);
-%     caxisLim = lims;
-%     
-% end
+
 if pltflag
 ax.LineStyle = 'none';ax.EdgeColor = 'flat';ax.FaceColor = 'flat';
 
@@ -182,10 +151,7 @@ f.YMinorTick = 'on';
 f.ZMinorTick = 'on';
 f.Box = 'on';
 f.BoxStyle = 'back';
-% f.XMinorGrid = 'on';
-% f.YMinorGrid = 'on';
-% f.ZMinorGrid = 'on';
-% if max(Z,[],'all') 
+
 f.ZTick = [min(Z,[],'all'),max(Z,[],'all')];
 f.ZTickLabel = {[round(min(Z,[],'all')),round(max(Z,[],'all'))]};%,[0,round(max(Z,[],'all'))]'],[1,1]);
 
