@@ -519,69 +519,33 @@ for ven = 1: length(vend)
                 [stU,stV,stW,st] = post_statsPara(regGridData,iFile);
                 for disp = 1 : 4
                    if ven == 1 && sys == 1 && (iGroupNum == 1 || iGroupNum == 2)
-%                       storeLim = true;
                       if avgFlag == 0
-                         [fieldP,cLim,meanval(iFile,disp)] = post_plot_A220209M(regGridData,Z,meanval(iFile,disp),...
+                         [fieldP,cLim,meanval(iFile,disp)] = fieldsAndResidualPlots(regGridData,Z,meanval(iFile,disp),...
                           rmnan,iGroupNum,sbt,disp,maindir,avgFlag,storeLim,fileext,...
-                          stU,stV,stW,[cLimLM(:,disp),cLimHM(:,disp)],fixedmean,pltflag);
-%                          if iGroupNum ==  1
-%                             cLimLo(iFile,disp) = cLim(1);
-%                             cLimHi(iFile,disp) = cLim(2);
-%                          end
-                                    
-                            
-                      else
-                                    
-                         [fieldP,cLim,meanval(iFile,disp),stat] = post_plot_A220209M(regGridData,Z,meanval(iFile,disp),...
+                          [cLimLM(:,disp),cLimHM(:,disp)],fixedmean,pltflag,"miniAOI(view2)"); 
+                      else                     
+                         [fieldP,cLim,meanval(iFile,disp),stat] = fieldsAndResidualPlots(regGridData,Z,meanval(iFile,disp),...
                          rmnan,iGroupNum,sbt,disp,maindir,avgFlag,storeLim,fileext,...
-                         stU,stV,stW,[cLimLM(:,disp),cLimHM(:,disp)],fixedmean,pltflag);
-%                          if ven == 1 && iGroupNum ==  1
-%                            cLimAvgLo(iFile,disp) = cLim(1);
-%                            cLimAvgHi(iFile,disp) = cLim(2);
-%                          end
-                                    
-                      end
-                            
-                           
+                         [cLimLM(:,disp),cLimHM(:,disp)],fixedmean,pltflag,"miniAOI(view2)");             
+                      end                   
+                          
                     elseif avgFlag == 0
                           storeLim = false;
-
-                          [fieldP,cLim,meanval(iFile,disp)] = post_plot_A220209M(regGridData,Z,meanval(iFile,disp),...
+                          [fieldP,cLim,meanval(iFile,disp)] = fieldsAndResidualPlots(regGridData,Z,meanval(iFile,disp),...
                           rmnan,iGroupNum,sbt,disp,maindir,avgFlag,storeLim,fileext,...
-                          stU,stV,stW,[cLimLM(:,disp),cLimHM(:,disp)],fixedmean,pltflag);
+                          [cLimLM(:,disp),cLimHM(:,disp)],fixedmean,pltflag,"miniAOI(view2)");
                     elseif avgFlag == 1
-                          storeLim = false;
-                                
-                          [fieldP,cLim,meanval(iFile,disp),stat] = post_plot_A220209M(regGridData,Z,meanval(iFile,disp),...
+                          storeLim = false;                                
+                          [fieldP,cLim,meanval(iFile,disp),stat] = fieldsAndResidualPlots(regGridData,Z,meanval(iFile,disp),...
                            rmnan,iGroupNum,sbt,disp,maindir,avgFlag,storeLim,fileext,...
-                          stU,stV,stW,[cLimLM(:,disp),cLimHM(:,disp)],fixedmean,pltflag);
-                    end
-%                            [fieldP,cLim,ax,ax1,cb] = post_plot_v2(regGridData,...
-%                                 rmnan,sbt,disp,maindir,avgFlag,storeLim,fileext,...
-%                                 stU,stV,stW);
-%                             
-%                             [fieldP,cLim,ax,ax1,cb] = post_plot_v2(regGridData,...
-%                                 rmnan,sbt,disp,maindir,avgFlag,storeLim,fileext,...
-%                                 stU,stV,stW);
-%                             export_fig(fieldP,'-m1.5')
-                            
-%                             fig = gcf;
-%                             fig.CurrentAxes = ax;
-%                             if avgFlag == 0
-%                                
-%                                 caxis([cLimLo(iFile,disp),cLimHi(iFile,disp)])
-%                             else
-%                                 caxis([cLimAvgLo(iFile,disp),cLimAvgHi(iFile,disp)])
-%                             end
-%                   colorbar;             
+                          [cLimLM(:,disp),cLimHM(:,disp)],fixedmean,pltflag,"miniAOI(view2)");
+                   end           
                  exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
                  stepStat(disp,:) = stat'; 
                  clf;
                 end
              end
-%                     filestat{iFile} = stepStat;
          end  
-%                 meanPerFrame{ven,grp,iGroupNum} = filestat;
       end
   end
 end
