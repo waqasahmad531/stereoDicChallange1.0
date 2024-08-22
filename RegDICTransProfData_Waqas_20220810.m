@@ -230,6 +230,11 @@ for iSys = 1:size(sysgroups,1)
                 disp(strcat('Writing RegMatFile => ',regMatFile));
                 %regData = CalcPntErrs(areaCoef, regData, theoCorners);
                 save(regMatFile,'regData');
+                %Save a grid of the data
+                disp('Creating grid data ');
+                regGridData=DataGrid(regProfData, regDispData, gridParms, minCounts);
+                disp(strcat('Writing RegGridFile => ',regGridMatFile));
+                save(regGridMatFile,'regGridData');
             end
 
             % Plotting to see if transformation worked or not.
