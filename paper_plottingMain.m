@@ -1,9 +1,6 @@
-% This version uses the same mean value that will be substracted from
-% all the vendors based on the first vendor chosen. Benefit of this would
-% be that we can compare the plots of different steps at different regions.
-% 
-clear all; close all; clc;
-lasFil = 'J:\DIC\LaserScan\laserScanRegDataGrid.mat';
+clearvars; close all; clc;
+dirFolder = "\\teamwork.org.aalto.fi\T20403-IceFrac\1.0 StereoDIC Challenge Project\DIC";
+lasFil = fullfile(dirFolder,'\LaserScan\laserScanRegDataGrid.mat');
 lasData_0 = load(lasFil);
 lasData = lasData_0(1).regGridData;
 lincutLoc = -30;
@@ -28,18 +25,11 @@ plot(xVal,ZZ(xLen(xVal==lincutLoc),:),'r','LineWidth',1);
 figure(3)
 plot(xVal,ZZ(xLen(xVal==lincutLoc),:),'r','LineWidth',1);
 %%
-dice = [115;...
-        125];
-dantec = [210;...
-               220]; 
-lavision = [310;...
-               320]; % LaVision
-matchid = [410;...
-            420];
-csi = [510; %CSI
-             520];
-grpid = [1,2,3,4,5];
- vend = {dice,dantec,lavision,matchid,csi};
+testing = [610;...
+        620];
+
+grpid = 6;%[1,2,3,4,5];
+ vend = {testing};
 %% Number of plots for legend
 grpdataset = 0;
 for ven = 1:length(vend)
@@ -64,7 +54,7 @@ cmplgd2 = 'Laser';
 clrcount = 0;
 
 for ven = 1: length(vend)
-    sysgroups = vend{ven};%[210 211 212 213 214];  %group 3 system 1 GREWER
+    sysgroups = vend{ven};%[210 211 212 213 214];  
     venc = venc + 1;
     recColor = zeros(size(sysgroups,2),3);
     for grp = 1:size(sysgroups,1)
@@ -77,7 +67,7 @@ for ven = 1: length(vend)
                 end    
                 groupNum = groups(iGroupNum);
                 %Get the filenames for the test
-                [fileNames, testDir,~, baseDir]=DicDataFileNames_v3(groupNum);  
+                [fileNames, testDir,~, baseDir]=DicDataFileNames_v3(dirFolder,groupNum);  
                 stepNames = strcat(fileNames,'_RegGrid.mat');
         
                 maindir = fullfile(baseDir,testDir);
@@ -179,7 +169,7 @@ for ven = 1: length(vend)
       for iGroupNum = 1:size(groups,2)
          groupNum = groups(iGroupNum);
 
-         [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(groupNum);  
+         [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(dirFolder,groupNum);  
          appliedStep = strrep(appliedStep,'=>',' : ');
          stepNames = strcat(fileNames,'_RegGrid.mat');
         
@@ -244,17 +234,9 @@ for ven = 1: length(vend)
                          [cLim,meanvalB(iFile,disp,ven),stat,tmean] = colorbarLims(regGridData,Z,meanvalB(iFile,disp,ven),...
                          rmnan,iGroupNum,disp,avgFlag,storeLim,...
                          fixedmean);
-%                          if iGroupNum ==  1
                            cLimAvgLo(iFile,disp) = cLim(1);
-                           cLimAvgHi(iFile,disp) = cLim(2);
-%                          end
-                           
-%                           [cLim(1) cLim(2) tmean]          
-                      end
-                       if any([cLim(1) cLim(2) tmean]>50) 
-                           fprintf('yahan masla hai')
-                       end
-                           
+                           cLimAvgHi(iFile,disp) = cLim(2);       
+                      end                          
 
                  stepStat(disp,:) = stat'; 
                 end
@@ -305,7 +287,7 @@ for ven = 1: length(vend)
          groupNum = groups(iGroupNum);
     
                 %Get the filenames for the test
-         [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(groupNum);  
+         [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(dirFolder,groupNum);  
          appliedStep = strrep(appliedStep,'=>',' : ');
          stepNames = strcat(fileNames,'_RegGrid.mat');
         
@@ -385,7 +367,6 @@ for vn = 1:length(vend)
               end  
               cLimHM = max(max(tmpH,[],3),[],1);
               cLimLM = min(min(tmpL,[],3),[],1);
-%               [cLimHM;cLimLM]
             for cm = 1:4
                 fig = set(gcf,'Renderer','opengl','color','white','Units','Normalized',...
                 'Outerposition',[0.4982,0.2079,0.3461,0.7625]);
@@ -408,7 +389,7 @@ for vn = 1:length(vend)
             end
    end
 end
-stepmeandir = strcat(baseDir,'stepsdMeanData7a.mat');
+stepmeandir = strcat(baseDir,'stepsdMeanDataTesting_a.mat');
  save(stepmeandir,'meanPerFrame','steps')
  %% Plotting table
 

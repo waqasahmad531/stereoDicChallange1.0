@@ -1,10 +1,7 @@
-% This version uses the same mean value that will be substracted from
-% all the vendors based on the first vendor chosen. Benefit of this would
-% be that we can compare the plots of different steps at different regions.
-%
-% clear all; close all; clc;
+
 close all
-lasFil = 'H:\DIC\LaserScan\laserScanRegDataGrid.mat';
+dirFolder = "\\teamwork.org.aalto.fi\T20403-IceFrac\1.0 StereoDIC Challenge Project\DIC";
+lasFil = fullfile(dirFolder,'\LaserScan\laserScanRegDataGrid.mat');
 lasData_0 = load(lasFil);
 lasData = lasData_0(1).regGridData;
 lincutLoc = -30;
@@ -29,7 +26,8 @@ plot(xVal,ZZ(xLen(xVal==lincutLoc),:),'r','LineWidth',1);
 figure(3)
 plot(xVal,ZZ(xLen(xVal==lincutLoc),:),'r','LineWidth',1);
 %%
-vend = {dice,dantec,lavision,matchid,csi};
+grpid = 6;%[1,2,3,4,5];
+ vend = {testing};
 %% Number of plots for legend
 grpdataset = 0;
 for ven = 1:length(vend)
@@ -48,10 +46,10 @@ cmplgd = 'Laser';
 cmplgd2 = 'Laser';
 cmplgdDiff1 = [];
 cmplgdDiff2 = [];
-% Change in this version to find the minimum area for each frame.
+
 clrcount = 0;
 for ven = 1: length(vend)
-    sysgroups = vend{ven};%[210 211 212 213 214];  %group 3 system 1 GREWER
+    sysgroups = vend{ven};%[210 211 212 213 214];  
     venc = venc + 1;
     recColor = zeros(size(sysgroups,2),3);
     for sys = 1:size(sysgroups,1)
@@ -63,7 +61,7 @@ for ven = 1: length(vend)
                 gr2c = gr2c + 1;
             end
             groupNum = groups(iGroupNum);
-            [fileNames, testDir,~, baseDir]=DicDataFileNames_v3(groupNum);
+            [fileNames, testDir,~, baseDir]=DicDataFileNames_v3(dirFolder, groupNum);
             stepNames = strcat(fileNames,'_RegGrid.mat');
 
             maindir = fullfile(baseDir,testDir);
@@ -140,7 +138,7 @@ exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
 
 figure(3)
 set(gcf,'color','w')
-set(gcf,'OuterPosition',[245,335.8,809.6,341.6]);%245,335.8,809.5999999999999,341.6000000000001
+set(gcf,'OuterPosition',[245,335.8,809.6,341.6]);
 set(gcf,'InnerPosition',[295,333,655,184.8])
 lgd = legend(cmplgd2);
 lgd.Interpreter = 'latex';
@@ -191,12 +189,11 @@ end
 [~,idx] = min(Zt,[],2,'omitnan');
 venInd = ceil(idx/2);
 
-grpid = [1,2,3,4,5];
-vend = {dice,dantec,lavision,matchid,csi};
+grpid = 6;%[1,2,3,4,5];
+ vend = {testing};
 %% New Version
 participants = [];
-% vend = {lava,sandia,grewer};
-% vend = {matchid};
+
 cLimLo = zeros(18,4);
 cLimHi = cLimLo;
 cLimAvgLo = cLimLo;
@@ -204,7 +201,7 @@ cLimAvgHi = cLimLo;
 meanvalB = zeros(18,4,length(vend));
 fixedmean = false;
 for ven = 1: length(vend)
-    sysgroups = vend{ven};%[210 211 212 213 214];  %group 3 system 1 GREWER
+    sysgroups = vend{ven};%[210 211 212 213 214]; 
 
     for sys = 1:size(sysgroups,1)
         groups = sysgroups(sys,:);
@@ -330,7 +327,7 @@ for ven = 1: length(vend)
             groupNum = groups(iGroupNum);
 
             %Get the filenames for the test
-            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(groupNum);
+            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(dirFolder,groupNum);
             appliedStep = strrep(appliedStep,'=>',' : ');
             stepNames = strcat(fileNames,'_RegGrid.mat');
 
@@ -422,5 +419,5 @@ for cm = 1:4
     clf
 end
 
-stepmeandir = strcat(baseDir,'stepsdMeanData7c.mat');
+stepmeandir = strcat(baseDir,'stepsdMeanDataTesting_c.mat');
 save(stepmeandir,'meanPerFrame','steps')
