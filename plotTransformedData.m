@@ -83,7 +83,7 @@ for field = 1:4
     figure(1)
     fieldP = sprintf('%sDataset%gStep%g%s%s', DICFileLoc, dataSet, iFile, pltfield{field}, fileext);
     sgtitle(sprintf('Dataset: %g, Step : %g, %s', dataSet, iFile, pltfield{field}), 'Interpreter', 'latex')
-    exportgraphics(gcf, fieldP, 'Resolution', 600)
+    % exportgraphics(gcf, fieldP, 'Resolution', 600)
     drawnow
     clf
 

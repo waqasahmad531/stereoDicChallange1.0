@@ -14,7 +14,7 @@ testDir = fullfile(baseDir,sysName(sysNum));
 dataSet = find(datasetInDir==datasetNum);
 locFolder = datasetDir(datasetNum==datasetInDir);
 testDir = fullfile(testDir,locFolder);
-matFiles = fullfile(testDir,'*.mat');
+matFiles = fullfile(testDir,'step*.mat');
 [fileNames,fileNumbers] = imgFilesPath(matFiles); % extracting frame name and number
 
 stepVals = [

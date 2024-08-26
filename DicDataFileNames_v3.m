@@ -42,7 +42,7 @@ function [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupNum, s
      
       %% Testing
       case 610  %Testing system 1-0000
-      testDir = fullfile(baseDir,'testing\35mm\Dataset 0');
+      testDir = fullfile(baseDir,'\35mm\Dataset 0');
       sysNum = 1;
       fileNames=repmat(" ",2,1);
       fileNames(1)='step00';
@@ -67,7 +67,7 @@ function [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupNum, s
       groupNum = "06";
       
       case 611  %Testing system 1-0001
-      testDir = fullfile(baseDir,'testing\35mm\Dataset 1');
+      testDir = fullfile(baseDir,'\35mm\Dataset 1');
       sysNum = 1;
       fileNames=repmat(" ",18,1);
       fileNames(1)='step00';
@@ -92,7 +92,7 @@ function [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupNum, s
       groupNum = "06";
       
       case 612  %Testing system 1-0002
-      testDir = fullfile(baseDir,'testing\35mm\Dataset 2');
+      testDir = fullfile(baseDir,'\35mm\Dataset 2');
       sysNum = 1;
       fileNames=repmat(" ",18,1);
       fileNames(1)='step00';
@@ -117,7 +117,7 @@ function [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupNum, s
       groupNum = "06";
       
       case 613  %Testing system 1-0003
-      testDir = fullfile(baseDir,'testing\35mm\Dataset 3');
+      testDir = fullfile(baseDir,'\35mm\Dataset 3');
       sysNum = 1;
       fileNames=repmat(" ",18,1);
       fileNames(1)='step00';
@@ -142,7 +142,7 @@ function [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupNum, s
       groupNum = "06";
       
       case 614  %Testing system 1-0004
-      testDir = fullfile(baseDir,'testing\35mm\Dataset 4');
+      testDir = fullfile(baseDir,'\35mm\Dataset 4');
       sysNum = 1;
       fileNames=repmat(" ",18,1);
       fileNames(1)='step00';
@@ -168,7 +168,7 @@ function [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupNum, s
       
       
      case 620  %Testing system 2-0000
-      testDir = fullfile(baseDir,'testing\16mm\Dataset 0');
+      testDir = fullfile(baseDir,'\16mm\Dataset 0');
       sysNum = 2;
       fileNames=repmat(" ",18,1);
       fileNames(1)='step00';
@@ -193,7 +193,7 @@ function [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupNum, s
       groupNum = "06";
       
       case 621  %Testing system 2-0001
-      testDir = fullfile(baseDir,'testing\16mm\Dataset 1');
+      testDir = fullfile(baseDir,'\16mm\Dataset 1');
       sysNum = 2;
       fileNames=repmat(" ",18,1);
       fileNames(1)='step00';
@@ -218,7 +218,7 @@ function [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupNum, s
       groupNum = "06";
       
       case 622  %Testing system 2-0002
-      testDir = fullfile(baseDir,'testing\16mm\Dataset 2');
+      testDir = fullfile(baseDir,'\16mm\Dataset 2');
       sysNum = 2;
       fileNames=repmat(" ",18,1);
       fileNames(1)='step00';
@@ -243,7 +243,7 @@ function [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupNum, s
       groupNum = "06";
       
       case 623  %Testing system 2-0003
-      testDir = fullfile(baseDir,'testing\16mm\Dataset 3');
+      testDir = fullfile(baseDir,'\16mm\Dataset 3');
       sysNum = 2;
       fileNames=repmat(" ",18,1);
       fileNames(1)='step00';
@@ -268,7 +268,7 @@ function [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupNum, s
       groupNum = "06";
       
       case 624  %Testing system 2-0004
-      testDir = fullfile(baseDir,'testing\16mm\Dataset 4');
+      testDir = fullfile(baseDir,'\16mm\Dataset 4');
       sysNum = 2;
       fileNames=repmat(" ",18,1);
       fileNames(1)='step00';
