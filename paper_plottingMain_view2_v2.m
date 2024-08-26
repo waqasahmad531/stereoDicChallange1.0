@@ -1,6 +1,7 @@
 
 close all
 dirFolder = "\\teamwork.org.aalto.fi\T20403-IceFrac\1.0 StereoDIC Challenge Project\DIC";
+testingDir = fullfile(dirFolder,"testing");
 lasFil = fullfile(dirFolder,'\LaserScan\laserScanRegDataGrid.mat');
 lasData_0 = load(lasFil);
 lasData = lasData_0(1).regGridData;
@@ -26,8 +27,11 @@ plot(xVal,ZZ(xLen(xVal==lincutLoc),:),'r','LineWidth',1);
 figure(3)
 plot(xVal,ZZ(xLen(xVal==lincutLoc),:),'r','LineWidth',1);
 %%
+grpid = [6];
+testing = [610;...
+    620];
 grpid = 6;%[1,2,3,4,5];
- vend = {testing};
+vend = {testing};
 %% Number of plots for legend
 grpdataset = 0;
 for ven = 1:length(vend)
@@ -61,11 +65,11 @@ for ven = 1: length(vend)
                 gr2c = gr2c + 1;
             end
             groupNum = groups(iGroupNum);
-            [fileNames, testDir,~, baseDir]=DicDataFileNames_v3(dirFolder, groupNum);
-            stepNames = strcat(fileNames,'_RegGrid.mat');
 
-            maindir = fullfile(baseDir,testDir);
-            frameNames = fullfile(maindir,stepNames);
+            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(testingDir,groupNum);
+            appliedStep = strrep(appliedStep,'=>',' : ');
+            stepNames = strcat(fileNames,'_RegGrid.mat');
+            frameNames = fullfile(testDir,stepNames);
             stepFiles{ven,sys,iGroupNum} = frameNames;
             u = zeros(601,601,18);
             v = u;
@@ -132,9 +136,9 @@ lgd.Box = 'off';
 lgd.Location = 'northwest';%'best';%'eastoutside';
 xlabel('Y-axis','Interpreter','latex','FontSize',12)
 ylabel('[mm]','Interpreter','latex','FontSize',12)
-fieldP = "H:\DIC\LineCuts\lineCutSys12.eps";
+fieldP = fullfile(dirFolder,"LineCuts\lineCutSys12.eps");
 set(gca,'XTick',-50:25:50); grid off;
-exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
+% exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
 
 figure(3)
 set(gcf,'color','w')
@@ -146,9 +150,9 @@ lgd.Box = 'off';
 lgd.Location = 'northwest';%'best';%'eastoutside';
 xlabel('Y-axis','Interpreter','latex','FontSize',12)
 ylabel('[mm]','Interpreter','latex','FontSize',12)
-fieldP = "H:\DIC\LineCuts\lineCutSys22.eps";
+fieldP = fullfile(dirFolder,"LineCuts\lineCutSys22.eps");
 set(gca,'XTick',-50:25:50); grid off;%legend('off')
-exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
+% exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
 
 figure(4)
 box on; grid on
@@ -162,9 +166,9 @@ lgd.Interpreter = 'latex';
 lgd.Location = 'northwest';
 xlabel('Y-axis','Interpreter','latex','FontSize',12)
 ylabel('Features difference($\mu$m)','Interpreter','latex','FontSize',12)
-fieldP = "H:\DIC\LineCuts\lineCutSys1df2.eps";
+fieldP = fullfile(dirFolder,"LineCuts\lineCutSys1df2.eps");
 set(gca,'XTick',-50:25:50); grid off;
-exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
+% exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
 
 figure(5)
 ylim([-175 175])
@@ -178,9 +182,9 @@ lgd.Box = 'off';
 lgd.Location = 'northwest';
 xlabel('Y-axis','Interpreter','latex','FontSize',12)
 ylabel('Features difference($\mu$m)','Interpreter','latex','FontSize',12)
-fieldP = "H:\DIC\LineCuts\lineCutSys2df2.eps";
+fieldP = fullfile(dirFolder,"LineCuts\lineCutSys2df2.eps");
 set(gca,'XTick',-50:25:50);grid off;
-exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
+% exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
 Zt = [];
 for iGr = 1:length(Znum)
     temp = Znum{iGr};
@@ -189,8 +193,6 @@ end
 [~,idx] = min(Zt,[],2,'omitnan');
 venInd = ceil(idx/2);
 
-grpid = 6;%[1,2,3,4,5];
- vend = {testing};
 %% New Version
 participants = [];
 
@@ -208,12 +210,10 @@ for ven = 1: length(vend)
         for iGroupNum = 1:size(groups,2)
             groupNum = groups(iGroupNum);
             %Get the filenames for the test
-            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(groupNum);
+            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(testingDir,groupNum);
             appliedStep = strrep(appliedStep,'=>',' : ');
             stepNames = strcat(fileNames,'_RegGrid.mat');
-
-            maindir = fullfile(baseDir,testDir);
-            frameNames = fullfile(maindir,stepNames);
+            frameNames = fullfile(testDir,stepNames);
             for iFile = 1:size(stepNames,1)
                 countr = 0;
                 if ven == 1 && sys == 1 && iGroupNum == 1  && iFile == 1
@@ -327,12 +327,11 @@ for ven = 1: length(vend)
             groupNum = groups(iGroupNum);
 
             %Get the filenames for the test
-            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(dirFolder,groupNum);
+            %Get the filenames for the test
+            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(testingDir,groupNum);
             appliedStep = strrep(appliedStep,'=>',' : ');
             stepNames = strcat(fileNames,'_RegGrid.mat');
-
-            maindir = fullfile(baseDir,testDir);
-            frameNames = fullfile(maindir,stepNames);
+            frameNames = fullfile(testDir,stepNames);
             for iFile = 1:size(stepNames,1)
                 %giving displacement valuesfor a particular frame for all the
                 % vendors and datasets and both systems
@@ -377,7 +376,8 @@ for ven = 1: length(vend)
                                 rmnan,iGroupNum,sbt,disp,maindir,avgFlag,storeLim,fileext,...
                                 [cLimLM(:,disp),cLimHM(:,disp)],fixedmean,pltflag,"miniAOI(view2)v2");
                         end
-                        exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
+                        drawnow
+                        % exportgraphics(gcf,fieldP,'Resolution',600) %U Disp
                         stepStat(disp,:) = stat';
                         clf;
                     end
@@ -396,11 +396,11 @@ grpid = [1,2,3,4,5];
 cLimHM = max(max(abcH,[],3),[],1);%max(tmpH,[],2)';
 cLimLM = min(min(abcL,[],3),[],1);%min(tmpL,[],2)';
 
-for cm = 1:4
-    fig = set(gcf,'Renderer','opengl','color','white','Units','Normalized',...
+fig = set(gcf,'Renderer','opengl','color','white','Units','Normalized',...
         'Outerposition',[0.152,0.1644,0.5021,0.7625]);
+for cm = 1:4    
     cb = colorbar;
-    colormap()
+    colormap();
     clim([cLimLM(cm) cLimHM(cm)])
     set(gca,'Visible','off');
     cb.Title.String = '[\mum]';
@@ -411,11 +411,11 @@ for cm = 1:4
 
     mfloc = strfind(fieldP,'\');
     figfold = mfloc(end)-1;
-    tm = "H:\DIC\colorbar\vertical";
+    tm = fullfile(dirFolder,"\colorbar\vertical");
     clbr = sprintf('colorMapd%s%s',fv(cm),fileext);
     clbrfile = fullfile(figfin,clbr);
     drawnow;
-    exportgraphics(gcf,clbrfile,'Resolution',600) %U Disp
+    % exportgraphics(gcf,clbrfile,'Resolution',600) %U Disp
     clf
 end
 
