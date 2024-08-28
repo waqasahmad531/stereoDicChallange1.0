@@ -1,4 +1,4 @@
-function  statsSpiderPlotStd_v2(statOfSteps,minl,maxl,absType)
+function  statsSpiderPlotStd(statOfSteps,minl,maxl,absType)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 % d1 = squeeze(sd_m(1,1,:));

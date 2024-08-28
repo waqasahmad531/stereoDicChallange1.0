@@ -66,7 +66,7 @@ for ven = 1: length(vend)
             end
             groupNum = groups(iGroupNum);
 
-            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(testingDir,groupNum);
+            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames(testingDir,groupNum);
             appliedStep = strrep(appliedStep,'=>',' : ');
             stepNames = strcat(fileNames,'_RegGrid.mat');
             frameNames = fullfile(testDir,stepNames);
@@ -210,7 +210,7 @@ for ven = 1: length(vend)
         for iGroupNum = 1:size(groups,2)
             groupNum = groups(iGroupNum);
             %Get the filenames for the test
-            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(testingDir,groupNum);
+            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames(testingDir,groupNum);
             appliedStep = strrep(appliedStep,'=>',' : ');
             stepNames = strcat(fileNames,'_RegGrid.mat');
             frameNames = fullfile(testDir,stepNames);
@@ -328,7 +328,7 @@ for ven = 1: length(vend)
 
             %Get the filenames for the test
             %Get the filenames for the test
-            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(testingDir,groupNum);
+            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames(testingDir,groupNum);
             appliedStep = strrep(appliedStep,'=>',' : ');
             stepNames = strcat(fileNames,'_RegGrid.mat');
             frameNames = fullfile(testDir,stepNames);

@@ -2,7 +2,7 @@ clc; close all; clearvars;
 format compact
 cd('\\teamwork.org.aalto.fi\T20403-IceFrac\1.0 StereoDIC Challenge Project\DIC\Matlab_Git')
 mainDir = "\\teamwork.org.aalto.fi\T20403-IceFrac\1.0 StereoDIC Challenge Project\DIC";
-testDir = fullfile(mainDir,"testing");
+testingDir = fullfile(mainDir,"testing");
 %%
 tic
 % profile on
@@ -12,8 +12,8 @@ fSubDispFromProfile = false; %subtract the displacement data from the profile to
 fRemoveOutliers = false; %remove data with displacements greater than numStdDev from the mean
 numStdDev = 3;
 fSaveRegData = true; %save the registered data
-fSaveRegGrid_w = true;%true; added these to avoid saving files
-fSaveRegGrid = true; %create and save a regular grid of registered data
+fSaveRegGrid_w = false;%true; added these to avoid saving files
+fSaveRegGrid = false; %create and save a regular grid of registered data
 fSaveTPlotGrid = false;  %save a regular grid of data for techplot
 fCalcProfileNoise = false;%calculate the noise in the profile from the 5 samples
 fSaveGlobalStats = true; %save the global stats to the excel sheet
@@ -31,12 +31,13 @@ outputTextData = strings([1,4]);
 %select the groups to work on
 % There are 5 frames captured at each step, named dataSet. The two systems
 % are number 1 and 2. Each row in sysgroups is for them respectively.
-sysgroups = [0,4;%[10, 11, 12, 13, 14;
-    0,3]; %20, 21, 22, 23, 24];
+testing = [610;620];%[613;624];%[610 613;...
+    % 620 624];
 
-
-figure('units','normalized','outerposition',[0 0 1 1])
-set(gcf,'color','w')
+if mapper == true
+    figure('units','normalized','outerposition',[0 0 1 1])
+    set(gcf,'color','w')
+end
 
 % sysgroups = [210 211 212 213 214];  %group 3 system 1 GREWER
 datasetim = [0 1 2 3 4];
@@ -46,16 +47,18 @@ stepVals = [0 0 0; 0 0 -10;0 0 -20; 0 0 10; 0 0 20; 10 0 0; 20 0 0;...
 
 absVal = sqrt(sum(stepVals.^2,2));
 
-for iSys = 1:size(sysgroups,1)
-    datasets = sysgroups(iSys,:);
+for iSys = 1:size(testing,1)
+    datasets = testing(iSys,:);
     for iDataset = 1:size(datasets,2)
         curDataset = datasets(iDataset);
 
         %Get the filenames for the test
-        groupID = "6"; % Hardcoding it as first 5 groups are settled now.
-        steps = [1 2 6 9 12 17 18];
-        [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, stepVals, stepNum] = ...
-            DicDataFileNamesForTesting(testDir, iSys,curDataset);
+        % groupID = "6"; % Hardcoding it as first 5 groups are settled now.
+        steps = 1:18;%[1 2 6 9 12 17 18];
+        [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames(testingDir, curDataset);
+        appliedStep = strrep(appliedStep,'=>',' : ');
+        % [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, stepVals, stepNum] = ...
+        %     DicDataFileNamesForTesting(testDir, iSys,curDataset);
         %get the parameters that describe the surface
         [theoBoundries,theoCorners,fitBoundries,areaCoef] = FillFitParms(sysNum, deadZone);
         imgfolder = 'Plots';
@@ -71,7 +74,6 @@ for iSys = 1:size(sysgroups,1)
 
         %Make regular grid data from all the files
         for iFile = 1:size(fileNames,1)
-
             if iSys == 1
                 imdir = strcat(mainDir,'\Translate\35-mm\*');
                 fildir = sprintf('%s%g_0.tif',imdir,datasetim(1));
@@ -88,10 +90,9 @@ for iSys = 1:size(sysgroups,1)
             %setup the input file name
             disp('******************************************************');
             disp(strcat('working on file: ',fileNames(iFile)));
-            fileBase = fileNames(iFile);
-            DICFileBase = extractBefore(fileBase,strlength(fileBase)-3);
-            DICInputFile = fileNames(iFile);%strcat(DICFileBase, '.mat');
-            zoneName = strcat(fileBase, ' ');  %%move to techplot area
+            fileBase = strcat(fileNames(iFile));
+            DICFileBase = fullfile(testDir, fileBase);
+            DICInputFile = strcat(DICFileBase, '.mat');
 
             %Read the data and then seperate into the sepaerate areas
             whos('-file', DICInputFile);
@@ -138,7 +139,7 @@ for iSys = 1:size(sysgroups,1)
                     %register and return the optimized transform values
                     optVals = RegisterPlate(areas, areaPnts, areaCoef, 3);
                     %save the parameters
-                    writematrix(RegParmsFile, optVals);
+                    writematrix(optVals,RegParmsFile);
                 else
                     assert(isfile(RegParmsFile),'Parameter file not found');
                     disp('reading the registration parameters from file');
@@ -226,6 +227,7 @@ for iSys = 1:size(sysgroups,1)
             if fSaveRegData == true
                 %Save the registered data for the profile
                 regMatFile = strcat(DICFileBase, '_Reg.mat');
+                regGridMatFile = strcat(DICFileBase, '_RegGrid.mat');
                 %Save the registered data
                 disp(strcat('Writing RegMatFile => ',regMatFile));
                 %regData = CalcPntErrs(areaCoef, regData, theoCorners);
@@ -236,6 +238,13 @@ for iSys = 1:size(sysgroups,1)
                 disp(strcat('Writing RegGridFile => ',regGridMatFile));
                 save(regGridMatFile,'regGridData');
             end
+            clf;
+            Z = regGridData(:,:,3);
+            p = pcolor(Z);
+            p.EdgeColor = 'None';
+            colormap(parula(20));colorbar
+            axis ij equal tight
+            drawnow
 
             % Plotting to see if transformation worked or not.
             pltfield = ["U","V","W","A"];

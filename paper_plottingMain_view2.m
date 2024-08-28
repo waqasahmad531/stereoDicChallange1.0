@@ -26,7 +26,6 @@ plot(xVal,ZZ(xLen(xVal==lincutLoc),:),'r','LineWidth',1);
 figure(3)
 plot(xVal,ZZ(xLen(xVal==lincutLoc),:),'r','LineWidth',1);
 %%
-grpid = [6];
 testing = [610;...
     620];
 grpid = 6;%[1,2,3,4,5];
@@ -70,7 +69,7 @@ for ven = 1: length(vend)
 
             groupNum = groups(iGroupNum);
             %Get the filenames for the test
-            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(testingDir,groupNum);
+            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames(testingDir,groupNum);
             appliedStep = strrep(appliedStep,'=>',' : ');
             stepNames = strcat(fileNames,'_RegGrid.mat');
             frameNames = fullfile(testDir,stepNames);
@@ -226,7 +225,7 @@ for ven = 1: length(vend)
             groupNum = groups(iGroupNum);
 
             %Get the filenames for the test
-            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(testingDir,groupNum);
+            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames(testingDir,groupNum);
             appliedStep = strrep(appliedStep,'=>',' : ');
             stepNames = strcat(fileNames,'_RegGrid.mat');
 
@@ -345,7 +344,7 @@ for ven = 1: length(vend)
             groupNum = groups(iGroupNum);
 
             %Get the filenames for the test
-            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames_v3(testingDir,groupNum);
+            [fileNames, testDir, sysNum, baseDir, appliedStep, dataSet, groupID, stepVals]=DicDataFileNames(testingDir,groupNum);
                 appliedStep = strrep(appliedStep,'=>',' : ');
                 stepNames = strcat(fileNames,'_RegGrid.mat');
 

@@ -3,7 +3,7 @@
 % all the vendors based on the first vendor chosen. Benefit of this would
 % be that we can compare the plots of different steps at different regions.
 %
-% clear all; close all; clc;
+clearvars; close all; clc;
 format compact
 lasFil = 'D:\DIC\LaserScan\laserScanRegDataGrid.mat';
 lasData_0 = load(lasFil);
@@ -14,17 +14,17 @@ ZZ = lasData(:,:,3);
 
 [finalMask,totalAoi] = scoringSytem(ZZ,1);
 %%
-dice = [115;125];
-dantec = [210;220];
-lavision = [310;320]; % LaVision
-matchid = [410;420];
-csi = [510;520];
+di = [115;125];
+da = [210;220];
+la = [310;320]; 
+ma = [410;420];
+cs = [510;520];
 grpid = [1,2,3,4,5];
-vend = {dice,dantec,lavision,matchid,csi};
+vend = {di,da,la,ma,cs};
 %% Calculating euclidian distances of missing data
 cntr = 0;
 for ven = 1: length(vend)
-    sysgroups = vend{ven};%[210 211 212 213 214];  %group 3 system 1 GREWER
+    sysgroups = vend{ven};
 
     for grp = 1:size(sysgroups,1)
         groups = sysgroups(grp,:);
@@ -53,7 +53,7 @@ for ven = 1: length(vend)
                 p = pcolor(XX,YY,finalScorer);
                 p.EdgeColor = 'None';
                 colormap(parula(7));view(2);cb = colorbar;
-                caxis([0 35])
+                clim([0 35])
                 axis ij equal tight
                 xlim([XX(53,53),XX(552,552)])
                 ylim([XX(53,53),XX(552,552)])
